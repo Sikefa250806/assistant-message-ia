@@ -2,394 +2,111 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Assistant Message IA</title>
+    <title>Assistant Message IA - Test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <style>
-      :root {
-        --bg-gradient: radial-gradient(circle at top, #1d4ed8 0, #020617 55%);
-        --card-bg: rgba(15, 23, 42, 0.9);
-        --border-subtle: rgba(148, 163, 184, 0.35);
-        --accent: #3b82f6;
-        --accent-soft: rgba(59, 130, 246, 0.12);
-        --text-main: #e5e7eb;
-        --text-muted: #9ca3af;
-      }
-
-      * {
-        box-sizing: border-box;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background: var(--bg-gradient);
-        color: var(--text-main);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-      }
-
-      .shell {
-        width: 100%;
-        max-width: 760px;
-      }
-
-      .logo-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 8px;
-        justify-content: center;
-      }
-
-      .logo-dot {
-        width: 26px;
-        height: 26px;
-        border-radius: 999px;
-        background: radial-gradient(circle at 30% 20%, #ffffff 0, #3b82f6 40%, #1d4ed8 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 0.8rem;
-        color: #e5e7eb;
-      }
-
-      .headline {
-        text-align: center;
-        font-size: 1.3rem;
-        font-weight: 600;
-      }
-
-      .subtitle {
-        text-align: center;
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-bottom: 18px;
-      }
-
-      .card {
-        background: var(--card-bg);
-        border-radius: 20px;
-        border: 1px solid var(--border-subtle);
-        box-shadow: 0 22px 60px rgba(15, 23, 42, 0.8);
-        padding: 18px 18px 16px;
-        backdrop-filter: blur(18px);
-      }
-
-      label {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 0.78rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-bottom: 4px;
-      }
-
-      .pill {
-        font-size: 0.7rem;
-        border-radius: 999px;
-        padding: 2px 7px;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        color: var(--text-muted);
-      }
-
-      textarea {
-        width: 100%;
-        border-radius: 12px;
-        border: 1px solid rgba(148, 163, 184, 0.5);
-        background: rgba(15, 23, 42, 0.95);
-        color: var(--text-main);
-        padding: 8px 10px;
-        font-size: 0.9rem;
-        resize: vertical;
-        min-height: 100px;
-        outline: none;
-      }
-
-      textarea::placeholder {
-        color: rgba(148, 163, 184, 0.7);
-      }
-
-      .chips-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-top: 6px;
-      }
-
-      .chip {
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        padding: 4px 10px;
-        font-size: 0.78rem;
-        color: var(--text-muted);
-        cursor: pointer;
-        user-select: none;
-      }
-
-      .chip.active {
-        border-color: var(--accent);
-        background: var(--accent-soft);
-        color: #bfdbfe;
-      }
-
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 12px 0 6px;
-      }
-
-      button {
-        border-radius: 999px;
-        border: none;
-        padding: 9px 16px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: transform 0.08s ease, box-shadow 0.08s ease,
-          background 0.15s ease;
-      }
-
-      button.primary {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: #e5e7eb;
-        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
-        width: 100%;
-        justify-content: center;
-      }
-
-      button.primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 14px 38px rgba(37, 99, 235, 0.55);
-      }
-
-      button.secondary {
-        background: rgba(15, 23, 42, 0.9);
-        color: var(--text-muted);
-        border: 1px solid rgba(148, 163, 184, 0.5);
-      }
-
-      button:disabled {
-        opacity: 0.6;
-        transform: none;
-        box-shadow: none;
-        cursor: default;
-      }
-
-      .status-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 8px;
-        margin-top: 4px;
-      }
-
-      .status {
-        font-size: 0.78rem;
-        color: var(--text-muted);
-      }
-
-      .status.error {
-        color: #fca5a5;
-      }
-
-      .hint {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-top: 4px;
-      }
-
-      @media (max-width: 600px) {
-        .card {
-          padding: 14px 14px 12px;
-        }
-      }
-    </style>
   </head>
-  <body>
-    <div class="shell">
-      <div class="logo-row">
-        <div class="logo-dot">IA</div>
-        <div class="headline">Assistant Message IA</div>
-      </div>
-      <div class="subtitle">
-        Tu écris ton idée, il sort un mail propre. Utilisable sur PC et mobile.
-      </div>
+  <body style="font-family: system-ui, sans-serif; margin: 20px;">
+    <h1>Assistant Message IA - Test</h1>
 
-      <div class="card">
-        <label>
-          Signature
-          <span class="pill">Ajoutée automatiquement</span>
-        </label>
-        <textarea
-          id="signature"
-          rows="2"
-          placeholder="Cordialement,&#10;Mourad Afekhssi"
-        ></textarea>
-        <div class="hint">
-          Elle sera ajoutée à la fin de chaque mail généré.
-        </div>
+    <p>
+      <strong>Notes :</strong><br />
+      <textarea id="inputText" rows="4" cols="60">
+Dire que je suis surpris par le retard et demander un retour avant demain.</textarea
+      >
+    </p>
 
-        <label style="margin-top: 12px">
-          Message rapide
-          <span class="pill">Brouillon libre</span>
-        </label>
-        <textarea
-          id="inputText"
-          placeholder="Ex : dire que je suis surpris par le retard, demander un retour avant demain, rester poli mais ferme…"
-        ></textarea>
+    <p>
+      <strong>Ton :</strong>
+      <select id="tone">
+        <option value="professionnel">professionnel</option>
+        <option value="amical">amical</option>
+        <option value="concis">concis</option>
+        <option value="ferme">ferme</option>
+      </select>
+    </p>
 
-        <label style="margin-top: 10px">
-          Ton du mail
-          <span class="pill">Ajuste la forme, pas le fond</span>
-        </label>
+    <p>
+      <strong>Signature :</strong><br />
+      <textarea id="signature" rows="2" cols="60">
+Cordialement,
+Mourad Afekhssi</textarea
+      >
+    </p>
 
-        <div class="chips-row" id="toneChips">
-          <div class="chip active" data-tone="professionnel">Professionnel</div>
-          <div class="chip" data-tone="amical">Amical</div>
-          <div class="chip" data-tone="concis">Très concis</div>
-          <div class="chip" data-tone="ferme">Ferme / poli</div>
-          <div class="chip" data-tone="excuse">Excuse</div>
-          <div class="chip" data-tone="relance">Relance</div>
-          <div class="chip" data-tone="remerciement">Remerciement</div>
-        </div>
+    <button id="generateBtn">Générer le mail</button>
 
-        <div class="actions">
-          <button class="primary" id="generateBtn">
-            ✉️ Générer le mail
-          </button>
-        </div>
+    <p><strong>Résultat :</strong></p>
+    <pre id="output" style="white-space:pre-wrap;border:1px solid #ccc;padding:10px;"></pre>
 
-        <label style="margin-top: 8px">
-          Mail généré
-          <span class="pill">Editable avant envoi</span>
-        </label>
-        <textarea
-          id="outputText"
-          rows="7"
-          placeholder="Le mail final apparaîtra ici..."
-        ></textarea>
-
-        <div class="status-row">
-          <div id="status" class="status"></div>
-          <button class="secondary" id="copyBtn">📋 Copier</button>
-        </div>
-      </div>
-    </div>
+    <p id="status" style="color:gray;font-size:0.9rem;"></p>
 
     <script>
       // 👉 URL de TON worker
       const WORKER_URL =
         "https://assistant-message-ia.mourad-afekhssi.workers.dev/";
 
-      const signatureInput = document.getElementById("signature");
-      const inputText = document.getElementById("inputText");
-      const outputText = document.getElementById("outputText");
-      const generateBtn = document.getElementById("generateBtn");
-      const copyBtn = document.getElementById("copyBtn");
-      const statusBox = document.getElementById("status");
-      const toneChips = document.getElementById("toneChips");
+      console.log("Script chargé");
 
-      let currentTone = "professionnel";
+      window.addEventListener("DOMContentLoaded", () => {
+        console.log("DOM chargé");
 
-      // Stocker la signature en localStorage
-      window.addEventListener("load", () => {
-        const savedSig = localStorage.getItem("assistant_signature");
-        if (savedSig) signatureInput.value = savedSig;
-        else signatureInput.value = "Cordialement,\nMourad Afekhssi";
-      });
+        const inputText = document.getElementById("inputText");
+        const tone = document.getElementById("tone");
+        const signature = document.getElementById("signature");
+        const btn = document.getElementById("generateBtn");
+        const output = document.getElementById("output");
+        const status = document.getElementById("status");
 
-      signatureInput.addEventListener("change", () => {
-        localStorage.setItem("assistant_signature", signatureInput.value.trim());
-      });
+        console.log("Éléments récupérés :", {
+          inputText,
+          tone,
+          signature,
+          btn,
+          output,
+        });
 
-      // Sélection du ton
-      toneChips.addEventListener("click", (e) => {
-        const chip = e.target.closest(".chip");
-        if (!chip) return;
-        [...toneChips.querySelectorAll(".chip")].forEach((c) =>
-          c.classList.remove("active")
-        );
-        chip.classList.add("active");
-        currentTone = chip.dataset.tone;
-      });
+        btn.addEventListener("click", async () => {
+          console.log("Bouton cliqué");
+          status.textContent = "Appel au worker...";
+          output.textContent = "";
 
-      async function generateMail() {
-        statusBox.classList.remove("error");
-        statusBox.textContent = "";
+          const body = {
+            notes: inputText.value.trim(),
+            tone: tone.value,
+            signature: signature.value.trim(),
+          };
 
-        const notes = inputText.value.trim();
-        const signature = signatureInput.value.trim();
+          console.log("Body envoyé au worker :", body);
 
-        if (!notes) {
-          statusBox.textContent =
-            "Ajoute d'abord quelques phrases de brouillon.";
-          statusBox.classList.add("error");
-          return;
-        }
+          try {
+            const res = await fetch(WORKER_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+            });
 
-        generateBtn.disabled = true;
-        generateBtn.textContent = "Génération…";
-        statusBox.textContent = "Je rédige ton mail…";
+            console.log("Réponse brute du worker :", res.status, res.statusText);
 
-        try {
-          const res = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ notes, tone: currentTone, signature }),
-          });
+            const data = await res.json().catch((e) => {
+              console.error("Erreur parse JSON:", e);
+              throw e;
+            });
 
-          if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            throw new Error(data.error || "Erreur côté serveur.");
+            console.log("JSON reçu :", data);
+
+            if (!res.ok) {
+              status.textContent = "Erreur côté worker : " + (data.error || "");
+              output.textContent = JSON.stringify(data, null, 2);
+              return;
+            }
+
+            status.textContent = "OK";
+            output.textContent = data.mail || "(pas de mail)";
+          } catch (e) {
+            console.error("Erreur globale :", e);
+            status.textContent = "Erreur JS : " + e.message;
           }
-
-          const data = await res.json();
-          outputText.value = data.mail || "";
-          statusBox.textContent =
-            "Mail généré. Relis puis colle-le dans ton client mail.";
-        } catch (e) {
-          statusBox.textContent = e.message || "Erreur inconnue.";
-          statusBox.classList.add("error");
-        } finally {
-          generateBtn.disabled = false;
-          generateBtn.textContent = "✉️ Générer le mail";
-        }
-      }
-
-      generateBtn.addEventListener("click", generateMail);
-
-      copyBtn.addEventListener("click", async () => {
-        const txt = outputText.value.trim();
-        statusBox.classList.remove("error");
-
-        if (!txt) {
-          statusBox.textContent = "Rien à copier pour l'instant.";
-          statusBox.classList.add("error");
-          return;
-        }
-
-        try {
-          await navigator.clipboard.writeText(txt);
-          statusBox.textContent =
-            "Mail copié. Colle-le dans FastMail / Proton / Spark.";
-        } catch {
-          statusBox.textContent =
-            "Impossible de copier automatiquement. Sélectionne le texte à la main.";
-          statusBox.classList.add("error");
-        }
+        });
       });
     </script>
   </body>
