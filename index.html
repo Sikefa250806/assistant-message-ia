@@ -181,13 +181,6 @@
         border: 1px solid rgba(148, 163, 184, 0.5);
       }
 
-      button:disabled {
-        opacity: 0.6;
-        transform: none;
-        box-shadow: none;
-        cursor: default;
-      }
-
       .status-row {
         display: flex;
         justify-content: space-between;
@@ -205,19 +198,9 @@
         color: #fca5a5;
       }
 
-      .hint {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-top: 4px;
-      }
-
-      @media (max-width: 600px) {
-        .card {
-          padding: 14px 14px 12px;
-        }
-      }
     </style>
   </head>
+
   <body>
     <div class="shell">
       <div class="logo-row">
@@ -225,34 +208,23 @@
         <div class="headline">Assistant Message IA</div>
       </div>
       <div class="subtitle">
-        Tu écris ton idée, il sort un mail propre. Utilisable sur PC et mobile.
+        Tu écris ton idée, il sort un message propre. Utilisable sur PC et mobile.
       </div>
 
       <div class="card">
-        <label>
-          Signature
-          <span class="pill">Ajoutée automatiquement</span>
-        </label>
-        <textarea
-          id="signature"
-          rows="2"
-          placeholder="Cordialement,&#10;Mourad Afekhssi"
-        ></textarea>
-        <div class="hint">
-          Elle sera ajoutée à la fin de chaque mail généré.
-        </div>
 
         <label style="margin-top: 12px">
           Message rapide
           <span class="pill">Brouillon libre</span>
         </label>
+
         <textarea
           id="inputText"
           placeholder="Ex : dire que je suis surpris par le retard, demander un retour avant demain, rester poli mais ferme…"
         ></textarea>
 
         <label style="margin-top: 10px">
-          Ton du mail
+          Ton du message
           <span class="pill">Ajuste la forme, pas le fond</span>
         </label>
 
@@ -268,18 +240,19 @@
 
         <div class="actions">
           <button class="primary" id="generateBtn">
-            ✉️ Générer le mail
+            ⚡ Générer le message
           </button>
         </div>
 
         <label style="margin-top: 8px">
-          Mail généré
-          <span class="pill">Editable avant envoi</span>
+          Message généré
+          <span class="pill">Éditable avant envoi</span>
         </label>
+
         <textarea
           id="outputText"
           rows="7"
-          placeholder="Le mail final apparaîtra ici..."
+          placeholder="Le message final apparaîtra ici..."
         ></textarea>
 
         <div class="status-row">
@@ -290,13 +263,11 @@
     </div>
 
     <script>
-      // 👉 URL de TON worker – bien celle-ci :
       const WORKER_URL =
         "https://assistant-message-ia.mourad-afekhssi.workers.dev/";
 
-      console.log("Script chargé, WORKER_URL =", WORKER_URL);
+      console.log("Frontend chargé, worker =", WORKER_URL);
 
-      const signatureInput = document.getElementById("signature");
       const inputText = document.getElementById("inputText");
       const outputText = document.getElementById("outputText");
       const generateBtn = document.getElementById("generateBtn");
@@ -306,19 +277,6 @@
 
       let currentTone = "professionnel";
 
-      // Stocker la signature en localStorage
-      window.addEventListener("load", () => {
-        console.log("DOM chargé");
-        const savedSig = localStorage.getItem("assistant_signature");
-        if (savedSig) signatureInput.value = savedSig;
-        else signatureInput.value = "Cordialement,\nMourad Afekhssi";
-      });
-
-      signatureInput.addEventListener("change", () => {
-        localStorage.setItem("assistant_signature", signatureInput.value.trim());
-      });
-
-      // Sélection du ton
       toneChips.addEventListener("click", (e) => {
         const chip = e.target.closest(".chip");
         if (!chip) return;
@@ -329,26 +287,24 @@
         currentTone = chip.dataset.tone;
       });
 
-      async function generateMail() {
-        console.log("Bouton générer cliqué");
+      async function generateMessage() {
+        console.log("Génération...");
         statusBox.classList.remove("error");
-        statusBox.textContent = "";
 
         const notes = inputText.value.trim();
-        const signature = signatureInput.value.trim();
 
         if (!notes) {
-          statusBox.textContent = "Ajoute d'abord quelques phrases de brouillon.";
+          statusBox.textContent = "Ajoute d'abord un brouillon.";
           statusBox.classList.add("error");
           return;
         }
 
+        statusBox.textContent = "Génération du message...";
         generateBtn.disabled = true;
-        generateBtn.textContent = "Génération…";
-        statusBox.textContent = "Je rédige ton mail…";
+        generateBtn.textContent = "⏳ Génération...";
 
-        const body = { notes, tone: currentTone, signature };
-        console.log("Body envoyé au worker :", body);
+        const body = { notes, tone: currentTone };
+        console.log("Body envoyé :", body);
 
         try {
           const res = await fetch(WORKER_URL, {
@@ -357,55 +313,41 @@
             body: JSON.stringify(body),
           });
 
-          console.log("Réponse brute du worker :", res.status, res.statusText);
-
-          const data = await res.json().catch((e) => {
-            console.error("Erreur parse JSON:", e);
-            throw e;
-          });
-
-          console.log("JSON reçu :", data);
+          const data = await res.json();
+          console.log("Retour worker :", data);
 
           if (!res.ok) {
-            statusBox.textContent =
-              "Erreur côté worker : " + (data.error || "");
+            statusBox.textContent = "Erreur : " + (data.error || "");
             statusBox.classList.add("error");
             return;
           }
 
-          outputText.value = data.mail || "";
-          statusBox.textContent =
-            "Mail généré. Relis puis colle-le dans ton client mail.";
+          outputText.value = data.message || "";
+          statusBox.textContent = "Message généré ✔️";
         } catch (e) {
-          console.error("Erreur globale :", e);
-          statusBox.textContent = "Erreur JS : " + e.message;
+          statusBox.textContent = "Erreur : " + e.message;
           statusBox.classList.add("error");
         } finally {
           generateBtn.disabled = false;
-          generateBtn.textContent = "✉️ Générer le mail";
+          generateBtn.textContent = "⚡ Générer le message";
         }
       }
 
-      generateBtn.addEventListener("click", generateMail);
+      generateBtn.addEventListener("click", generateMessage);
 
       copyBtn.addEventListener("click", async () => {
         const txt = outputText.value.trim();
-        statusBox.classList.remove("error");
-
         if (!txt) {
-          statusBox.textContent = "Rien à copier pour l'instant.";
+          statusBox.textContent = "Rien à copier.";
           statusBox.classList.add("error");
           return;
         }
 
         try {
           await navigator.clipboard.writeText(txt);
-          statusBox.textContent =
-            "Mail copié. Colle-le dans FastMail / Proton / Spark.";
+          statusBox.textContent = "Message copié ✔️";
         } catch {
-          statusBox.textContent =
-            "Impossible de copier automatiquement. Sélectionne le texte à la main.";
-          statusBox.classList.add("error");
+          statusBox.textContent = "Impossible de copier.";
         }
       });
     </script>
