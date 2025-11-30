@@ -197,7 +197,6 @@
       .status.error {
         color: #fca5a5;
       }
-
     </style>
   </head>
 
@@ -212,7 +211,6 @@
       </div>
 
       <div class="card">
-
         <label style="margin-top: 12px">
           Message rapide
           <span class="pill">Brouillon libre</span>
@@ -288,11 +286,9 @@
       });
 
       async function generateMessage() {
-        console.log("Génération...");
         statusBox.classList.remove("error");
 
         const notes = inputText.value.trim();
-
         if (!notes) {
           statusBox.textContent = "Ajoute d'abord un brouillon.";
           statusBox.classList.add("error");
@@ -304,8 +300,6 @@
         generateBtn.textContent = "⏳ Génération...";
 
         const body = { notes, tone: currentTone };
-        console.log("Body envoyé :", body);
-
         try {
           const res = await fetch(WORKER_URL, {
             method: "POST",
@@ -314,8 +308,6 @@
           });
 
           const data = await res.json();
-          console.log("Retour worker :", data);
-
           if (!res.ok) {
             statusBox.textContent = "Erreur : " + (data.error || "");
             statusBox.classList.add("error");
@@ -348,6 +340,7 @@
           statusBox.textContent = "Message copié ✔️";
         } catch {
           statusBox.textContent = "Impossible de copier.";
+          statusBox.classList.add("error");
         }
       });
     </script>
